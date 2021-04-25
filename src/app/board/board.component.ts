@@ -28,10 +28,10 @@ export class BoardComponent implements OnInit {
 
   makeMove(idx: number) {
     if (!this.matrix[idx]) {
-      this.matrix.splice(idx, 1, this.player);
+      this.matrix[idx] = this.player;
       this.flag = false;
     }
-    this.winner = this.checkWinner();
+    this.winner = this.checkWinner(this.matrix);
 
     if (this.winner == null) {
       const move = this.mini_max(
@@ -41,13 +41,13 @@ export class BoardComponent implements OnInit {
         Number.MIN_VALUE,
         Number.MAX_VALUE
       );
-      this.matrix.splice(move, 1, this.player);
+      this.matrix[move] = this.player;
       this.flag = true;
-      this.winner = this.checkWinner();
+      this.winner = this.checkWinner(this.matrix);
     }
   }
 
-  checkWinner(): string {
+  checkWinner(matrix: string[]): string {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -60,18 +60,14 @@ export class BoardComponent implements OnInit {
     ];
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
-      if (
-        this.matrix[a] &&
-        this.matrix[a] === this.matrix[b] &&
-        this.matrix[a] === this.matrix[c]
-      ) {
-        return this.matrix[a];
+      if (matrix[a] && matrix[a] === matrix[b] && matrix[a] === matrix[c]) {
+        return matrix[a];
       }
     }
 
     let draw = true;
-    this.matrix.forEach((v) => {
-      if (v == null) {
+    matrix.forEach((v) => {
+      if (v === null) {
         draw = false;
         return;
       }
@@ -91,28 +87,24 @@ export class BoardComponent implements OnInit {
     alpha: number,
     beta: number
   ): number {
-    const winner = this.checkWinner();
+    const winner = this.checkWinner(matrix);
 
     if (winner == 'X') {
-      console.log("asdas");
       return 10 - depth;
     } else if (winner == 'O') {
-      console.log("asdas");
       return -10 + depth;
     } else if (winner == 'DRAW') {
-      console.log("asdas");
       return 0;
     }
 
-  
     let best_index = 0;
 
     if (maximizing) {
       let max_eval = Number.MIN_VALUE;
       for (let index = 0; index < 9; ++index) {
-
         if (matrix[index] === null) {
-          const auxMatrix = Array.from(matrix);
+
+          let auxMatrix = Array.from(matrix);
           auxMatrix[index] = 'X';
 
           let evaluation = this.mini_max(
@@ -140,7 +132,9 @@ export class BoardComponent implements OnInit {
 
       for (let index = 0; index < 9; ++index) {
         if (matrix[index] === null) {
-          const auxMatrix = Array.from(matrix);
+          
+          
+          let auxMatrix = Array.from(matrix);
           auxMatrix[index] = 'O';
 
           let evaluation = this.mini_max(
