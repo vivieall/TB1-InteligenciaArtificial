@@ -4,7 +4,7 @@
 
 
 <h2 *ngIf="winner">
-    Jugador {{ winner }} ganó la partida!
+    {{ winner == "DRAW" ? "Hubo un empate" : "Jugador " + winner + " ganó la partida!"}}
 </h2>
 
 
